@@ -1,0 +1,48 @@
+# Advent of Code
+
+```elixir
+Mix.install([
+  {:httpoison, "~> 1.8"},
+  {:jason, "~> 1.4"}
+])
+```
+
+## Setup
+
+```elixir
+defmodule AOC do
+  def get_day(num) do
+    {:ok, resp} =
+      HTTPoison.get("https://adventofcode.com/2022/day/#{num}/input",
+        cookie: System.fetch_env!("LB_COOKIE")
+      )
+
+    resp.body
+  end
+end
+```
+
+## Day 1
+
+```elixir
+input = AOC.get_day(1)
+
+elfs =
+  input
+  |> String.split("\n\n")
+  |> Enum.map(fn elf ->
+    elf
+    |> String.split("\n")
+    |> Enum.reject(&(&1 == ""))
+    |> Enum.map(&String.to_integer/1)
+    |> Enum.sum()
+  end)
+  |> Enum.sort(:desc)
+
+max = List.first(elfs)
+
+top3 =
+  elfs
+  |> Enum.take(3)
+  |> Enum.sum()
+```
