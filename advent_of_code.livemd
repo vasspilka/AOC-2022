@@ -115,3 +115,51 @@ input
 end)
 |> Enum.sum()
 ```
+## Day 3
+
+```elixir
+input = AOC.get_day(3)
+
+score = fn
+  <<lower::utf8>> when lower in ?a..?z ->
+    lower - ?a + 1
+
+  <<upper::utf8>> when upper in ?A..?Z ->
+    upper - ?A + 27
+end
+
+# Part 1
+input
+|> String.split("\n", trim: true)
+|> Enum.map(fn str ->
+  size = String.length(str)
+
+  [p1, p2] =
+    String.split_at(str, div(size, 2))
+    |> Tuple.to_list()
+    |> Enum.map(&String.split(&1, "", trim: true))
+
+  tmp_list = p1 -- p2
+  # Sometimes we get the same result twice as ["X", "X"]
+  [common_item | _] = p1 -- tmp_list
+
+  score.(common_item)
+end)
+|> Enum.sum()
+```
+
+```elixir
+# Part 2
+input
+|> String.split("\n", trim: true)
+|> Enum.chunk_every(3)
+|> Enum.map(fn strings ->
+  [l1, l2, l3] = Enum.map(strings, &String.split(&1, "", trim: true))
+
+  Enum.find(l1, fn char ->
+    Enum.member?(l2, char) && Enum.member?(l3, char)
+  end)
+  |> score.()
+end)
+|> Enum.sum()
+```
