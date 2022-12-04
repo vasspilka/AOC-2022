@@ -2,8 +2,7 @@
 
 ```elixir
 Mix.install([
-  {:httpoison, "~> 1.8"},
-  {:jason, "~> 1.4"}
+  {:httpoison, "~> 1.8"}
 ])
 ```
 
