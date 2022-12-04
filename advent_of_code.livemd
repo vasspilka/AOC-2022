@@ -162,3 +162,60 @@ input
 end)
 |> Enum.sum()
 ```
+
+## Day 4
+
+```elixir
+input = AOC.get_day(4)
+```
+
+```elixir
+input
+|> String.split("\n", trim: true)
+|> Enum.map(fn str ->
+  [a1, b1] =
+    str
+    |> String.split(",")
+    |> Enum.map(fn pair ->
+      [f, t] =
+        pair
+        |> String.split("-")
+        |> Enum.map(&String.to_integer/1)
+
+      # We create a list of integers from using the from and to values.
+      Range.new(f, t)
+      |> Enum.to_list()
+    end)
+    |> dbg
+
+  # We check if either of the list is contained within the other
+  a1 -- b1 == [] || b1 -- a1 == []
+end)
+|> Enum.filter(& &1)
+|> Enum.count()
+```
+
+```elixir
+input
+|> String.split("\n", trim: true)
+|> Enum.map(fn str ->
+  [a, b] =
+    str
+    |> String.split(",")
+    |> Enum.map(fn pair ->
+      [f, t] =
+        pair
+        |> String.split("-")
+        |> Enum.map(&String.to_integer/1)
+
+      # We create a list of integers from using the from and to values.
+      Range.new(f, t)
+      |> Enum.to_list()
+    end)
+
+  # When there are no common items in list this will return nil.
+  List.myers_difference(a, b)[:eq]
+end)
+|> Enum.filter(& &1)
+|> Enum.count()
+```
