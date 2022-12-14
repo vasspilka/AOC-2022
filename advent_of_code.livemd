@@ -219,3 +219,66 @@ end)
 |> Enum.filter(& &1)
 |> Enum.count()
 ```
+
+## Day 5
+
+```elixir
+input = AOC.get_day(5)
+```
+
+```elixir
+%{stacks: stacks, actions: actions} =
+  input
+  |> String.split("\n", trim: true)
+  |> Enum.reduce(%{stacks: [], actions: []}, fn
+    <<"move ", amount::binary-size(1), " from ", from::binary-size(1), " to ",
+      to::binary-size(1)>>,
+    acc ->
+      action = [String.to_integer(amount), String.to_integer(from) - 1, String.to_integer(to) - 1]
+      %{acc | actions: acc.actions ++ [action]}
+
+    <<"move ", amount::binary-size(2), " from ", from::binary-size(1), " to ",
+      to::binary-size(1)>>,
+    acc ->
+      action = [String.to_integer(amount), String.to_integer(from) - 1, String.to_integer(to) - 1]
+      %{acc | actions: acc.actions ++ [action]}
+
+    " 1" <> _, acc ->
+      acc
+
+    "[" <> rest, acc ->
+      stack =
+        rest
+        |> String.to_charlist()
+        |> Enum.take_every(4)
+
+      %{acc | stacks: acc.stacks ++ [stack]}
+
+    " " <> rest, acc ->
+      stack =
+        rest
+        |> String.to_charlist()
+        |> Enum.take_every(4)
+
+      %{acc | stacks: acc.stacks ++ [stack]}
+  end)
+
+horizontal_stacks =
+  stacks
+  |> Enum.zip()
+  |> Enum.map(&Tuple.to_list/1)
+  |> Enum.map(&Enum.reject(&1, fn i -> i == 32 end))
+
+Enum.reduce(actions, horizontal_stacks, fn [amount, from, to], stacks ->
+  from_stack = Enum.at(stacks, from)
+  to_stack = Enum.at(stacks, to)
+
+  {transfer, rest_from} = Enum.split(from_stack, amount)
+  new_to = Enum.reverse(transfer) ++ to_stack
+
+  stacks
+  |> List.replace_at(from, rest_from)
+  |> List.replace_at(to, new_to)
+end)
+|> Enum.map(&List.first/1)
+```
